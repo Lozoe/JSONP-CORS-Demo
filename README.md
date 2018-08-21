@@ -18,39 +18,57 @@
 ## 实现方式
 1. 声明一个封装函数jsonp，使传入的url可以自动生成一个随机请求名称的查询字符串地址；
 ```javascript
-  function jsonp(url, fn) {
-    var functionName = 'lz' + parseInt(Math.random()*100000);
-    window[functionName] = fn;
-
-    var script = document.createElement('script');
-    script.src = url + '?callback=' + functionName;
-    document.head.appendChild(script)
-  }
+function jsonp (url, onsuccess, onerror, charset) {
+    var callbackName = util.getName('lz');
+    window[callbackName] = function () {
+        if (onsuccess && util.isFunction(onsuccess)) {
+            onsuccess(arguments[0]);
+        }
+    };
+    var script = util.createScript(util.getConnectUrl(url) + 'callback=' + callbackName, charset);
+    script.onload = script.onreadystatechange = function () {
+        if (!script.readyState || /loaded|complete/.test(script.readyState)) {
+            script.onload = script.onreadystatechange = null;
+            // 移除该script的 DOM 对象
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
+            // 删除函数或变量
+            window[callbackName] = null;
+        }
+    };
+    script.onerror = function () {
+        if (onerror && util.isFunction(onerror)) {
+            onerror();
+        }
+    };
+    document.getElementsByTagName('head')[0].appendChild(script);
+};
 ```
 2. 数据文件xxx.js的内容为以下格式：
 ```javascript
-  {{callback}}({"name":"lz", "qb":500});
+{{callback}}({"name":"lz", "qb":500});
 ```
 
 3. 在后台端加入获取查询字符串的语句，并将发送来的查询字符串名声明为callback，在响应时，让callback替换掉xxx.js的函数名。
 ```javascript
-  if(path === '/xxx.js'){
-  var string = fs.readFileSync('./xxx.js', 'utf8')
-  var callback = query.callback;
-  response.setHeader('Content-Type', 'text/javascript;charset=utf-8')
-  response.end(string.replace('{{callback}}', callback))
-  }
+if(path === '/xxx.js'){
+    var string = fs.readFileSync('./xxx.js', 'utf8')
+    var callback = query.callback;
+    response.setHeader('Content-Type', 'text/javascript;charset=utf-8')
+    response.end(string.replace('{{callback}}', callback))
+}
 ```
 
 4. 执行jsonp，传入url和一个回调函数打印出结果；
 ```javascript
 jsonp('http://qq.com:81/xxx.js', function (data) {
-  console.log('第一次的数据');
-  console.log(data)
+    console.log('第一次的数据');
+    console.log(data)
 });
 jsonp('http://qq.com:81/xxx.js', function (data) {
-  console.log('第二次的数据');
-  console.log(data)
+    console.log('第二次的数据');
+    console.log(data)
 });
 ```
 5. 得到响应的数据为lz+一个5位随机数的执行函数；
@@ -66,13 +84,13 @@ jsonp('http://qq.com:81/xxx.js', function (data) {
 jQuery也为JSONP设置了对应方法，可以直接调用。
 ```javascript
 $.ajax({
-  url: 'http://qq.com:81/xxx.js',
-  type: 'GET',
-  dataType: 'jsonp',
-  success: function(data){
-    console.log('jquery得到的数据');
-    console.log(data)
-  }
+    url: 'http://qq.com:81/xxx.js',
+    type: 'GET',
+    dataType: 'jsonp',
+    success: function(data){
+      console.log('jquery得到的数据');
+      console.log(data)
+    }
 });
 ```
 得到的响应数据为：
