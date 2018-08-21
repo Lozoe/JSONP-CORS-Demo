@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTƒ-8">
+    <title>JSONP跨域测试</title>
+    <link rel="stylesheet" href="http://qq.com:81/styles/style.css">
+    <script src="//apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="http://qq.com:81/scripts/util.js"></script>
+    <!--<script src="http://qq.com:81/xxx.js"></script>-->
+</head>
+<body>
+<h5>我是lz。</h5>
+
+<script>
+    //    function xxx1(data) {
+    //        console.log('我得到的数据是');
+    //        console.log(data.name);
+    //    }
+    //    function xxx2(data) {
+    //        console.log('我得到的数据是');
+    //        console.log(data.qb);
+    //    }
+    //
+    //    var script = document.createElement('script');
+    //    script.src = "http://qq.com:81/xxx.js?callback=xxx1";     //业界一般使用callback
+    //    //response xxx({"name":"lz", "qb":500}); 函数会立即执行
+    //    document.head.appendChild(script)
+    //
+    //    var script = document.createElement('script');
+    //    script.src = "http://qq.com:81/xxx.js?callback=xxx2";
+    //    document.head.appendChild(script)
+
+
+    // 封装jsonp
+    // function jsonp(url, fn) {
+    //     var functionName = 'lz' + parseInt(Math.random() * 100000);
+    //     window[functionName] = fn;
+
+    //     var script = document.createElement('script');
+    //     script.src = url + '?callback=' + functionName;
+    //     document.head.appendChild(script)
+    // }
+
+    // jsonp('http://qq.com:81/xxx.js', function (data) {
+    //     console.log('第一次的数据');
+    //     console.log(data)
+    // });
+    // jsonp('http://qq.com:81/xxx.js', function (data) {
+    //     console.log('第二次的数据');
+    //     console.log(data)
+    // });
+    util && util.jsonp('http://qq.com:81/xxx.js', function (data) {
+        console.log('第一次的数据-success');
+        console.log(data)
+    });
+
+    util && util.jsonp('http://qq.com:81/xxx.js', function (data) {
+        console.log('第二次的数据-success');
+        console.log(data)
+    });
+    
+
+    // jQuery封装的jsonp
+    // $.ajax({
+    //     url: 'http://qq.com:81/xxx.js',
+    //     type: 'GET',
+    //     dataType: 'jsonp',
+    //     success: function (data) {
+    //         console.log('jqueryAPI得到的数据');
+    //         console.log(data)
+    //     }
+    // });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTƒ-8">
+    <title>这是一个CORS跨域测试</title>
+    <script src="http://qq.com:81/scripts/util.js"></script>
+</head>
+<body>
+    这是一个CORS跨域测试
+<script>
+    // let xhr = new XMLHttpRequest();
+    // xhr.open('POST', 'http://qq.com:81/CORS.do')
+    // xhr.onload = function () {
+    //     console.log(xhr.responseText);
+    // };
+    // xhr.send();
+    util && util.ajax({
+        type: 'GET',
+        url: 'http://qq.com:81/CORS.do',
+        data: {
+            a: 'aaaaaaaaaaaaaa',
+            b: 'bbbbbbbbbbbbbb'
+        },
+        success: function(data) {
+            console.log(data);
+        }
+    });
+</script>
+</body>
+</html>
