@@ -154,4 +154,45 @@ util.ajax = function (options) {
     }
 };
 
+/**
+ * [function 获取search参数内容]
+ * @param {[type]} name [参数名字]
+ */
+util.getQuery = function(name) {
+    if (!name || !location.search) return;
+    var result = location.search.match(new RegExp('[?&]' + name + '=([^&]+)', 'i'));
+    if (result != null && result.length > 0 && result[1] != null) return result[1];
+};
+
+/**
+ * [function 获取search参数对象集合]
+ * @param {[type]} path [location.serch || location.hash]
+ */
+util.parse = function(path) {
+    if (!path) {
+        return {};
+    }
+    var paramsStr = /^(?:\?|\#)(.+)/.exec(path)[1]; // 将 ? 或者 # 后面的字符串取出来
+    var paramsArr = paramsStr.split("&"); // 分割 key 和 value
+    var result = {};
+
+    paramsArr.forEach(function (item) {
+        if (/=/.test(item)) {
+            var [key, value] = item.split("=");
+            value = decodeURIComponent(value); // 解码
+            value = /^\d+$/.test(value) ? parseFloat(value) : value; // 判断是否转为数字
+            if (result.hasOwnProperty(key)) {
+                // 如果对象有 key，则添加一个值
+                result[key] = [].concat(paramsObj[key], val);
+            } else {
+                // 如果对象没有这个 key，创建 key 并设置值
+                result[key] = value;
+            }
+        } else {
+            result[key] = true;
+        }
+    })
+    return result;
+};
+
 window.util = util;
